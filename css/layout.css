@@ -138,6 +138,11 @@
     to { opacity: 1; transform: translateY(0); }
 }
 
+/* Mobile Menu Button */
+#btn-mobile-menu {
+    display: none;
+}
+
 /* Grids e Containers */
 .kpi-grid {
     display: grid;
@@ -175,11 +180,24 @@
         position: fixed;
         left: -260px;
         transition: left var(--transition-normal);
+        box-shadow: var(--shadow-lg);
     }
     .sidebar.open {
         left: 0;
     }
     .charts-grid.three-cols {
         grid-template-columns: 1fr;
+    }
+    #btn-mobile-menu {
+        display: block !important;
+    }
+    .page-wrapper {
+        padding: 1rem;
+    }
+    .topbar {
+        padding: 0 1rem;
+    }
+    .user-info {
+        display: none; /* Esconde nome no celular para economizar espaço */
     }
 }

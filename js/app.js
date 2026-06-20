@@ -93,6 +93,7 @@ class AppController {
     }
 
     initListeners() {
+        // Filtros Dashboard
         document.getElementById('btn-filtrar-area').addEventListener('click', () => {
             const area = document.getElementById('filter-area').value;
             const mes = document.getElementById('filter-mes-area').value;
@@ -105,6 +106,24 @@ class AppController {
             const ano = document.getElementById('filter-ano-colab').value;
             this.dashboard.updateDashboardColaborador(colab, ano);
         });
+
+        // Mobile Menu
+        const btnMenu = document.getElementById('btn-mobile-menu');
+        const sidebar = document.querySelector('.sidebar');
+        if (btnMenu && sidebar) {
+            btnMenu.addEventListener('click', () => {
+                sidebar.classList.toggle('open');
+            });
+            
+            // Fechar sidebar ao clicar em um link no celular
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.addEventListener('click', () => {
+                    if (window.innerWidth <= 768) {
+                        sidebar.classList.remove('open');
+                    }
+                });
+            });
+        }
     }
 }
 

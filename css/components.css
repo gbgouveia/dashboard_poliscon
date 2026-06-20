@@ -223,8 +223,12 @@
 .modal-content {
     width: 100%;
     max-width: 500px;
+    background: var(--bg-color);
+    border-radius: 12px;
+    overflow: hidden;
     transform: translateY(20px);
-    transition: transform var(--transition-normal);
+    transition: all var(--transition-normal);
+    margin: 1rem;
     max-height: 90vh;
     overflow-y: auto;
 }
