@@ -1,5 +1,5 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 import { getFirestore, collection, addDoc, getDocs, doc, updateDoc, deleteDoc, query, where, serverTimestamp, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
 // A configuração está ofuscada (Base64) para evitar leitura imediata por bots em repositórios abertos.
@@ -15,30 +15,36 @@ try {
 }
 
 // Inicializa o Firebase
-let app, auth, db;
+let app, auth, db, secondaryApp, secondaryAuth;
 try {
     app = initializeApp(firebaseConfig);
     auth = getAuth(app);
     db = getFirestore(app);
+
+    // App secundária para criar usuários sem deslogar o admin atual
+    secondaryApp = initializeApp(firebaseConfig, "SecondaryApp");
+    secondaryAuth = getAuth(secondaryApp);
 } catch(e) {
     console.error("Firebase não configurado ou erro na inicialização.", e);
 }
 
 export { 
-  app,
-  auth, 
-  db, 
-  signInWithEmailAndPassword, 
-  signOut, 
-  onAuthStateChanged,
-  collection, 
-  addDoc, 
-  getDocs, 
-  doc, 
-  updateDoc, 
-  deleteDoc, 
-  query, 
-  where,
-  serverTimestamp,
-  orderBy
+    app, 
+    auth, 
+    db, 
+    signInWithEmailAndPassword, 
+    signOut, 
+    onAuthStateChanged,
+    collection, 
+    addDoc, 
+    getDocs, 
+    doc, 
+    updateDoc, 
+    deleteDoc, 
+    query, 
+    where, 
+    serverTimestamp, 
+    orderBy,
+    secondaryAuth,
+    createUserWithEmailAndPassword
 };

@@ -50,11 +50,32 @@ class AppController {
         }
     }
 
-    showApp(user) {
+    async showApp(user) {
         document.getElementById('login-section').classList.add('hidden');
         document.getElementById('app-section').classList.remove('hidden');
         document.getElementById('user-name-display').innerText = user.email || 'Usuário';
-        this.loadData();
+        
+        // Bloqueio de Acesso por Perfil
+        const perfil = await window.crudController.getUserProfile(user.email);
+        
+        if (perfil === 'LANCADOR') {
+            document.querySelector('.sidebar').style.display = 'none'; // Esconde barra lateral completa
+            
+            // Oculta todas as views
+            document.querySelectorAll('.view-content').forEach(v => v.classList.add('hidden'));
+            // Mostra apenas a aba de lançador restrita
+            const viewLancador = document.getElementById('view-lancador');
+            if(viewLancador) viewLancador.classList.remove('hidden');
+            
+            document.getElementById('page-title').innerText = 'Painel Operacional';
+        } else {
+            // Admin Normal
+            document.querySelector('.sidebar').style.display = 'flex';
+            document.querySelectorAll('.view-content').forEach(v => v.classList.add('hidden'));
+            document.getElementById('view-dashboard-geral').classList.remove('hidden');
+            document.getElementById('page-title').innerText = 'Visão Geral';
+            this.loadData();
+        }
     }
 
     showLogin() {

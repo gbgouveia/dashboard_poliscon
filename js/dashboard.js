@@ -127,13 +127,34 @@ export class DashboardController {
     }
 
     updateCadastrosList() {
-        let htmlAreas = this.dados.areas.map(a => `<div style="padding: 0.5rem; border-bottom: 1px solid var(--surface-border);"><i class="ph ph-buildings"></i> ${a.nome}</div>`).join('');
+        const createItemHTML = (texto, colecao, id) => `
+            <div style="padding: 0.5rem; border-bottom: 1px solid var(--surface-border); display: flex; justify-content: space-between; align-items: center;">
+                <span>${texto}</span>
+                <button class="btn btn-danger" style="padding: 0.25rem 0.5rem; min-width: auto; height: 32px;" onclick="window.crudController.excluirItem('${colecao}', '${id}')" title="Excluir"><i class="ph ph-trash" style="font-size: 1.1rem; margin: 0;"></i></button>
+            </div>
+        `;
+
+        let htmlAreas = this.dados.areas.map(a => createItemHTML(`<i class="ph ph-buildings"></i> ${a.nome}`, 'areas', a.id)).join('');
         document.getElementById('lista-areas').innerHTML = htmlAreas || 'Nenhuma área cadastrada.';
 
         let htmlColabs = this.dados.colaboradores.map(c => {
             const area = this.dados.areas.find(a => a.id === c.areaId);
-            return `<div style="padding: 0.5rem; border-bottom: 1px solid var(--surface-border);"><i class="ph ph-user"></i> ${c.nome} <span class="text-muted" style="font-size:0.8rem">- ${area ? area.nome : ''}</span></div>`;
+            return createItemHTML(`<i class="ph ph-user"></i> ${c.nome} <span class="text-muted" style="font-size:0.8rem">- ${area ? area.nome : ''}</span>`, 'colaboradores', c.id);
         }).join('');
         document.getElementById('lista-colaboradores').innerHTML = htmlColabs || 'Nenhum colaborador cadastrado.';
+        
+        let htmlMetas = this.dados.metas.map(m => {
+            const area = this.dados.areas.find(a => a.id === m.areaId);
+            const colab = this.dados.colaboradores.find(c => c.id === m.colaboradorId);
+            const alvo = m.tipo === 'AREA' ? (area ? area.nome : '') : (colab ? colab.nome : '');
+            return createItemHTML(`<i class="ph ph-target"></i> ${m.titulo} <span class="text-muted" style="font-size:0.8rem">- ${alvo}</span>`, 'metas', m.id);
+        }).join('');
+        if(document.getElementById('lista-metas')) document.getElementById('lista-metas').innerHTML = htmlMetas || 'Nenhuma meta cadastrada.';
+
+        let htmlLancamentos = this.dados.lancamentos.map(l => {
+            const meta = this.dados.metas.find(m => m.id === l.metaId);
+            return createItemHTML(`<i class="ph ph-chart-line-up"></i> ${l.mes}/${l.ano} - Prev: ${l.previsto} | Real: ${l.realizado} <span class="text-muted" style="font-size:0.8rem">- ${meta ? meta.titulo : ''}</span>`, 'lancamentos', l.id);
+        }).join('');
+        if(document.getElementById('lista-lancamentos')) document.getElementById('lista-lancamentos').innerHTML = htmlLancamentos || 'Nenhum lançamento registrado.';
     }
 }

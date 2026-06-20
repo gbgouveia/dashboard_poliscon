@@ -32,12 +32,11 @@
             <form id="login-form">
                 <div class="form-group">
                     <input type="email" id="email" class="form-control"
-                        placeholder="E-mail corporativo (teste: admin@poliscon.com)" value="admin@poliscon.com"
-                        required>
+                        placeholder="Insira seu e-mail" required>
                 </div>
                 <div class="form-group">
-                    <input type="password" id="password" class="form-control" placeholder="Senha (teste: 123456)"
-                        value="123456" required>
+                    <input type="password" id="password" class="form-control" placeholder="Insira sua senha"
+                        required>
                 </div>
                 <div id="login-error" class="text-danger"
                     style="margin-bottom: 1rem; font-size: 0.85rem; display: none;"></div>
@@ -295,6 +294,29 @@
                             <div style="margin-top: 1rem;" id="lista-colaboradores">Nenhum colaborador cadastrado.</div>
                         </div>
                     </div>
+                    
+                    <div class="charts-grid" style="margin-top: -0.5rem;">
+                        <div class="glass-card" style="padding: 1.5rem;">
+                            <h3>Metas Cadastradas</h3>
+                            <div style="margin-top: 1rem;" id="lista-metas">Nenhuma meta cadastrada.</div>
+                        </div>
+                        <div class="glass-card" style="padding: 1.5rem;">
+                            <h3>Lançamentos Realizados</h3>
+                            <div style="margin-top: 1rem;" id="lista-lancamentos">Nenhum lançamento.</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- VIEW: APENAS LANÇAMENTOS (Perfil Restrito) -->
+                <div id="view-lancador" class="view-content hidden" style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 60vh;">
+                    <div class="glass-card" style="padding: 3rem; text-align: center; max-width: 500px;">
+                        <i class="ph ph-note-pencil" style="font-size: 4rem; color: var(--primary-color); margin-bottom: 1rem;"></i>
+                        <h2 style="margin-bottom: 1rem;">Área de Imputação de Dados</h2>
+                        <p style="color: var(--text-secondary); margin-bottom: 2rem;">Seu acesso é exclusivo para lançar o desempenho das metas cadastradas.</p>
+                        <button class="btn btn-primary" style="font-size: 1.1rem; padding: 1rem 2rem;" onclick="window.crudController.openModal('modal-lancamento')">
+                            <i class="ph ph-plus-circle"></i> Fazer Novo Lançamento
+                        </button>
+                    </div>
                 </div>
 
             </div>
@@ -353,6 +375,21 @@
                     <div class="form-group">
                         <label class="form-label">Cargo</label>
                         <input type="text" id="colab-cargo" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">E-mail (Login)</label>
+                        <input type="email" id="colab-email" class="form-control" required autocomplete="new-email">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Senha de Acesso</label>
+                        <input type="password" id="colab-senha" class="form-control" required autocomplete="new-password">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Nível de Acesso (Perfil)</label>
+                        <select id="colab-perfil" class="form-control" required>
+                            <option value="ADMIN">Administrador Geral</option>
+                            <option value="LANCADOR">Apenas Lançamentos (Operacional)</option>
+                        </select>
                     </div>
                 </form>
             </div>

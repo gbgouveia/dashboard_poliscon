@@ -1,4 +1,4 @@
-import { db, collection, addDoc, getDocs, doc, updateDoc, deleteDoc, serverTimestamp } from './firebase.js';
+import { db, collection, addDoc, getDocs, doc, updateDoc, deleteDoc, serverTimestamp, secondaryAuth, createUserWithEmailAndPassword, query, where } from './firebase.js';
 
 // Mocks for Local Storage if Firebase is not configured (offline mode demo)
 let useMocks = !db;
@@ -79,23 +79,37 @@ window.crudController = {
         const nome = document.getElementById('colab-nome').value;
         const areaId = document.getElementById('colab-area').value;
         const cargo = document.getElementById('colab-cargo').value;
+        const email = document.getElementById('colab-email').value;
+        const senha = document.getElementById('colab-senha').value;
+        const perfil = document.getElementById('colab-perfil').value;
         
-        if(!nome || !areaId || !cargo) return alert('Preencha todos os campos.');
+        if(!nome || !areaId || !cargo || !email || !senha || !perfil) return alert('Preencha todos os campos, incluindo e-mail e senha.');
 
-        const data = { nome, areaId, cargo, criadoEm: new Date().toISOString() };
+        const data = { nome, areaId, cargo, email, perfil, criadoEm: new Date().toISOString() };
 
-        if(useMocks) {
-            data.id = generateId();
-            mockDB.colaboradores.push(data);
-            saveMocks();
-        } else {
-            data.criadoEm = serverTimestamp();
-            await addDoc(collection(db, "colaboradores"), data);
+        try {
+            if(useMocks) {
+                data.id = generateId();
+                mockDB.colaboradores.push(data);
+                saveMocks();
+            } else {
+                // Registrar no Auth primeiro, se tivermos secondaryAuth configurado
+                if (secondaryAuth) {
+                    const userCred = await createUserWithEmailAndPassword(secondaryAuth, email, senha);
+                    data.uid = userCred.user.uid; // Salva o UID do Auth no documento do colaborador
+                }
+                
+                data.criadoEm = serverTimestamp();
+                await addDoc(collection(db, "colaboradores"), data);
+            }
+
+            alert('Colaborador salvo com sucesso!');
+            window.crudController.closeModal('modal-colaborador');
+            if(window.appController) window.appController.loadData();
+        } catch(error) {
+            console.error("Erro ao criar colaborador:", error);
+            alert("Erro ao salvar: " + error.message);
         }
-
-        alert('Colaborador salvo!');
-        window.crudController.closeModal('modal-colaborador');
-        if(window.appController) window.appController.loadData();
     },
 
     salvarMeta: async () => {
@@ -146,6 +160,25 @@ window.crudController = {
         alert('Lançamento salvo!');
         window.crudController.closeModal('modal-lancamento');
         if(window.appController) window.appController.loadData();
+    },
+
+    excluirItem: async (colecao, id) => {
+        if(!confirm("Tem certeza que deseja excluir este item permanentemente?")) return;
+        
+        try {
+            if(useMocks) {
+                mockDB[colecao] = mockDB[colecao].filter(item => item.id !== id);
+                saveMocks();
+            } else {
+                const fireCollection = (colecao === 'lancamentos') ? 'lancamentos_metas' : colecao;
+                await deleteDoc(doc(db, fireCollection, id));
+            }
+            alert('Item excluído com sucesso!');
+            if(window.appController) window.appController.loadData();
+        } catch(e) {
+            console.error("Erro ao excluir", e);
+            alert("Erro ao excluir item: " + e.message);
+        }
     },
 
     loadAreaSelects: async () => {
@@ -216,6 +249,32 @@ window.crudController = {
                 lancamentos: snapL.docs.map(d => ({id: d.id, ...d.data()}))
             }
         }
+    },
+
+    getUserProfile: async (email) => {
+        if (!email) return 'LANCADOR';
+        if (email === 'admin@poliscon.com') return 'ADMIN'; // Fallback offline admin
+        
+        try {
+            if (useMocks) {
+                const colab = mockDB.colaboradores.find(c => c.email === email);
+                return colab ? colab.perfil : 'LANCADOR';
+            } else {
+                const q = query(collection(db, "colaboradores"), where("email", "==", email));
+                const snap = await getDocs(q);
+                if (!snap.empty) {
+                    // Se achou na lista mas não tem perfil salvo (cadastro antigo), assume como ADMIN
+                    return snap.docs[0].data().perfil || 'ADMIN';
+                } else {
+                    // Se o usuário está no Auth (conseguiu logar) mas não existe na coleção de colaboradores, 
+                    // significa que é o dono original do sistema (criado no console do Firebase).
+                    return 'ADMIN'; 
+                }
+            }
+        } catch(e) {
+            console.error("Erro ao buscar perfil", e);
+        }
+        return 'ADMIN'; // Garante o acesso total ao dono original caso haja falha
     }
 };
 
