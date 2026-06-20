@@ -1,0 +1,116 @@
+/* Importando fontes modernas (Inter) */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+:root {
+    /* Paleta de Cores Corporativas POLISCON */
+    --primary-color: #0E1A53; /* Azul POLISCON */
+    --primary-light: #1E3A8A; /* Azul claro para hovers */
+    --secondary-color: #B67500; /* Dourado escuro */
+    --gold-light: #FCD6A6;
+    --gold-main: #FFA821;
+    --gold-gradient: linear-gradient(135deg, #FF8200, #FCD6A6, #FFA821, #B67500);
+    
+    /* Background e Superfícies (Tema Claro Cinza) */
+    --bg-color: #E2E4E9; /* Cinza da marca (baseado no fundo da logo) */
+    --surface-color: rgba(255, 255, 255, 0.7); /* Branco com opacidade para glassmorphism */
+    --surface-border: rgba(14, 26, 83, 0.1); /* Borda sutil azul escuro */
+    
+    /* Status Colors */
+    --success-color: #10B981; /* Verde */
+    --warning-color: #FFA821; /* Dourado POLISCON */
+    --danger-color: #EF4444; /* Vermelho */
+    
+    /* Tipografia (Escura para Tema Claro) */
+    --text-primary: #0E1A53; /* Texto principal no Azul Escuro da Marca */
+    --text-secondary: #475569; /* Cinza médio para textos secundários */
+    
+    /* Fontes */
+    --font-family: 'Inter', sans-serif;
+    
+    /* Sombras e Efeitos */
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    
+    /* Transições */
+    --transition-fast: 0.2s ease;
+    --transition-normal: 0.3s ease;
+}
+
+/* Reset Básico */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: var(--font-family);
+    background-color: var(--bg-color);
+    color: var(--text-primary);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    min-height: 100vh;
+    overflow-x: hidden;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+a {
+    text-decoration: none;
+    color: var(--primary-color);
+    transition: color var(--transition-fast);
+}
+
+a:hover {
+    color: var(--primary-light);
+}
+
+ul {
+    list-style: none;
+}
+
+button {
+    cursor: pointer;
+    font-family: var(--font-family);
+    border: none;
+    outline: none;
+}
+
+input, select, textarea {
+    font-family: var(--font-family);
+    outline: none;
+}
+
+/* Utilitários de Texto */
+.text-success { color: var(--success-color); }
+.text-warning { color: var(--warning-color); }
+.text-danger { color: var(--danger-color); }
+.text-muted { color: var(--text-secondary); }
+
+/* Scrollbar Customizada */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--bg-color); 
+}
+
+::-webkit-scrollbar-thumb {
+    background: #334155; 
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #475569; 
+}
+
+/* Esconder elementos base */
+.hidden {
+    display: none !important;
+}

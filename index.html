@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>POLISCON | Dashboard Executivo</title>
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/glass.css">
+    <link rel="stylesheet" href="css/layout.css">
+    <link rel="stylesheet" href="css/components.css">
+
+    <!-- Icons (Phosphor Icons - Modernos e Corporativos) -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+
+    <!-- TELA DE LOGIN -->
+    <section id="login-section" class="login-container">
+        <div class="glass-panel login-card">
+            <img src="assets/logo.svg" alt="POLISCON" class="login-logo"
+                style="height: 200px; width: 100%; object-fit: contain; margin-bottom: 1.5rem; filter: drop-shadow(0px 4px 6px rgba(0,0,0,0.1));">
+            <h2 class="login-title">Bem-vindo</h2>
+            <p class="login-subtitle">Faça login para acessar o painel corporativo.</p>
+
+            <form id="login-form">
+                <div class="form-group">
+                    <input type="email" id="email" class="form-control"
+                        placeholder="E-mail corporativo (teste: admin@poliscon.com)" value="admin@poliscon.com"
+                        required>
+                </div>
+                <div class="form-group">
+                    <input type="password" id="password" class="form-control" placeholder="Senha (teste: 123456)"
+                        value="123456" required>
+                </div>
+                <div id="login-error" class="text-danger"
+                    style="margin-bottom: 1rem; font-size: 0.85rem; display: none;"></div>
+                <button type="submit" class="btn btn-primary" style="width: 100%;">
+                    Entrar <i class="ph ph-sign-in"></i>
+                </button>
+                <div style="margin-top: 1rem; font-size: 0.8rem; color: var(--text-secondary);">
+
+                </div>
+            </form>
+        </div>
+    </section>
+
+    <!-- APP PRINCIPAL (Escondido até logar) -->
+    <section id="app-section" class="app-container hidden">
+
+        <!-- SIDEBAR -->
+        <aside class="sidebar glass-sidebar">
+            <div class="sidebar-logo">
+                <img src="assets/logo.svg" alt="POLISCON"
+                    style="height: 200px; width: 100%; object-fit: contain; filter: drop-shadow(0px 2px 4px rgba(0,0,0,0.1));">
+            </div>
+            <nav class="nav-menu">
+                <a href="#" class="nav-item active" data-target="dashboard-geral">
+                    <i class="ph ph-squares-four"></i> Visão Geral
+                </a>
+                <a href="#" class="nav-item" data-target="dashboard-area">
+                    <i class="ph ph-chart-pie-slice"></i> Por Área
+                </a>
+                <a href="#" class="nav-item" data-target="dashboard-colaborador">
+                    <i class="ph ph-users"></i> Por Colaborador
+                </a>
+                <div style="height: 1px; background: rgba(255,255,255,0.1); margin: 1rem 0;"></div>
+                <a href="#" class="nav-item" data-target="cadastros">
+                    <i class="ph ph-database"></i> Cadastros
+                </a>
+                <div style="flex: 1;"></div>
+                <a href="#" id="btn-logout" class="nav-item text-danger">
+                    <i class="ph ph-sign-out"></i> Sair
+                </a>
+            </nav>
+        </aside>
+
+        <!-- MAIN CONTENT -->
+        <main class="main-content">
+
+            <!-- TOPBAR -->
+            <header class="topbar glass-header">
+                <h1 id="page-title" class="page-title">Visão Geral</h1>
+                <div class="user-profile">
+                    <div class="user-info">
+                        <div class="user-name" id="user-name-display">Carregando...</div>
+                        <div class="user-role">Administrador Executivo</div>
+                    </div>
+                    <div class="avatar">
+                        <i class="ph ph-user"></i>
+                    </div>
+                </div>
+            </header>
+
+            <!-- VIEWS -->
+            <div class="page-wrapper">
+
+                <!-- VIEW: VISÃO GERAL -->
+                <div id="view-dashboard-geral" class="view-content">
+                    <div class="kpi-grid">
+                        <div class="glass-card kpi-card">
+                            <div class="kpi-info">
+                                <h3>Total de Metas</h3>
+                                <div class="kpi-value" id="kpi-total-metas">0</div>
+                                <div class="kpi-indicator positive"><i class="ph ph-trend-up"></i> Ativas no sistema
+                                </div>
+                            </div>
+                            <div class="kpi-icon"><i class="ph ph-target"></i></div>
+                        </div>
+                        <div class="glass-card kpi-card">
+                            <div class="kpi-info">
+                                <h3>Total de Áreas</h3>
+                                <div class="kpi-value" id="kpi-total-areas">0</div>
+                                <div class="kpi-indicator"><i class="ph ph-buildings"></i> Setores operacionais</div>
+                            </div>
+                            <div class="kpi-icon"><i class="ph ph-briefcase"></i></div>
+                        </div>
+                        <div class="glass-card kpi-card">
+                            <div class="kpi-info">
+                                <h3>Total Colaboradores</h3>
+                                <div class="kpi-value" id="kpi-total-colab">0</div>
+                                <div class="kpi-indicator"><i class="ph ph-users"></i> Equipe POLISCON</div>
+                            </div>
+                            <div class="kpi-icon"><i class="ph ph-users-three"></i></div>
+                        </div>
+                        <div class="glass-card kpi-card">
+                            <div class="kpi-info">
+                                <h3>Desempenho Geral</h3>
+                                <div class="kpi-value" id="kpi-desempenho-geral">0%</div>
+                                <div class="kpi-indicator positive" id="kpi-desempenho-indicador"><i
+                                        class="ph ph-check-circle"></i> Média global</div>
+                            </div>
+                            <div class="kpi-icon"><i class="ph ph-chart-line-up"></i></div>
+                        </div>
+                    </div>
+
+                    <div class="charts-grid">
+                        <div class="glass-card chart-card">
+                            <div class="chart-header">
+                                <h3 class="chart-title">Evolução Geral da Empresa (Conformidade)</h3>
+                            </div>
+                            <div class="chart-container">
+                                <canvas id="chartEvolucaoGeral"></canvas>
+                            </div>
+                        </div>
+                        <div class="glass-card chart-card">
+                            <div class="chart-header">
+                                <h3 class="chart-title">Distribuição de Desempenho por Área</h3>
+                            </div>
+                            <div class="chart-container">
+                                <canvas id="chartDistribuicaoDesempenho"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- VIEW: DASHBOARD POR ÁREA -->
+                <div id="view-dashboard-area" class="view-content hidden">
+                    <div class="glass-card" style="padding: 1.5rem; margin-bottom: 2rem;">
+                        <div class="filters-bar" style="margin-bottom: 0;">
+                            <div class="form-group" style="margin-bottom: 0;">
+                                <label class="form-label">Área</label>
+                                <select id="filter-area" class="form-control">
+                                    <option value="">Carregando...</option>
+                                </select>
+                            </div>
+                            <div class="form-group" style="margin-bottom: 0;">
+                                <label class="form-label">Mês</label>
+                                <select id="filter-mes-area" class="form-control">
+                                    <option value="1">Janeiro</option>
+                                    <option value="2">Fevereiro</option>
+                                    <option value="3">Março</option>
+                                    <option value="4">Abril</option>
+                                    <option value="5">Maio</option>
+                                    <option value="6">Junho</option>
+                                    <option value="7">Julho</option>
+                                    <option value="8">Agosto</option>
+                                    <option value="9">Setembro</option>
+                                    <option value="10">Outubro</option>
+                                    <option value="11">Novembro</option>
+                                    <option value="12">Dezembro</option>
+                                </select>
+                            </div>
+                            <div class="form-group" style="margin-bottom: 0;">
+                                <label class="form-label">Ano</label>
+                                <input type="number" id="filter-ano-area" class="form-control" value="2026">
+                            </div>
+                            <div style="display: flex; align-items: flex-end; padding-bottom: 2px;">
+                                <button id="btn-filtrar-area" class="btn btn-primary"><i
+                                        class="ph ph-arrows-clockwise"></i> Atualizar</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="charts-grid three-cols">
+                        <div class="glass-card kpi-card"
+                            style="grid-column: span 1; flex-direction: column; justify-content: center; align-items: center; text-align: center;">
+                            <div class="kpi-icon" style="margin-bottom: 1rem;"><i class="ph ph-shield-check"></i></div>
+                            <div class="kpi-info" style="width: 100%;">
+                                <h3>Conformidade da Área</h3>
+                                <div class="kpi-value" id="kpi-area-conformidade" style="font-size: 3rem;">0%</div>
+                                <div class="kpi-indicator" id="kpi-area-status"
+                                    style="justify-content: center; margin-top: 1rem;">Selecione uma área</div>
+                            </div>
+                        </div>
+                        <div class="glass-card chart-card" style="grid-column: span 2;">
+                            <div class="chart-header">
+                                <h3 class="chart-title">Desempenho da Área (Realizado vs Previsto)</h3>
+                            </div>
+                            <div class="chart-container" style="min-height: 250px;">
+                                <canvas id="chartAreaDesempenho"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- VIEW: DASHBOARD POR COLABORADOR -->
+                <div id="view-dashboard-colaborador" class="view-content hidden">
+                    <div class="glass-card" style="padding: 1.5rem; margin-bottom: 2rem;">
+                        <div class="filters-bar" style="margin-bottom: 0;">
+                            <div class="form-group" style="margin-bottom: 0;">
+                                <label class="form-label">Colaborador</label>
+                                <select id="filter-colaborador" class="form-control">
+                                    <option value="">Carregando...</option>
+                                </select>
+                            </div>
+                            <div class="form-group" style="margin-bottom: 0;">
+                                <label class="form-label">Ano</label>
+                                <input type="number" id="filter-ano-colab" class="form-control" value="2026">
+                            </div>
+                            <div style="display: flex; align-items: flex-end; padding-bottom: 2px;">
+                                <button id="btn-filtrar-colab" class="btn btn-primary"><i
+                                        class="ph ph-arrows-clockwise"></i> Atualizar</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="charts-grid">
+                        <div class="glass-card chart-card">
+                            <div class="chart-header">
+                                <h3 class="chart-title">Evolução Mensal do Colaborador</h3>
+                            </div>
+                            <div class="chart-container">
+                                <canvas id="chartColaboradorEvolucao"></canvas>
+                            </div>
+                        </div>
+                        <div class="glass-card chart-card">
+                            <div class="chart-header">
+                                <h3 class="chart-title">Média de Atingimento (Gauge)</h3>
+                            </div>
+                            <div class="chart-container"
+                                style="display: flex; justify-content: center; align-items: center; position: relative;">
+                                <canvas id="chartColaboradorGauge" style="max-height: 250px;"></canvas>
+                                <div id="gauge-text"
+                                    style="position: absolute; font-size: 2rem; font-weight: bold; top: 60%;">0%</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- VIEW: CADASTROS (CRUD) -->
+                <div id="view-cadastros" class="view-content hidden">
+                    <div class="glass-card" style="padding: 1.5rem; margin-bottom: 2rem;">
+                        <h2 style="margin-bottom: 1.5rem;">Gerenciamento do Sistema</h2>
+                        <div class="filters-bar">
+                            <button class="btn btn-secondary" onclick="window.crudController.openModal('modal-area')"><i
+                                    class="ph ph-plus"></i> Nova Área</button>
+                            <button class="btn btn-secondary"
+                                onclick="window.crudController.openModal('modal-colaborador')"><i
+                                    class="ph ph-plus"></i> Novo Colaborador</button>
+                            <button class="btn btn-primary" onclick="window.crudController.openModal('modal-meta')"><i
+                                    class="ph ph-plus"></i> Nova Meta</button>
+                            <button class="btn btn-primary"
+                                onclick="window.crudController.openModal('modal-lancamento')"><i class="ph ph-plus"></i>
+                                Novo Lançamento</button>
+                        </div>
+                    </div>
+
+                    <div class="charts-grid">
+                        <div class="glass-card" style="padding: 1.5rem;">
+                            <h3>Áreas Cadastradas</h3>
+                            <div style="margin-top: 1rem;" id="lista-areas">Nenhuma área cadastrada.</div>
+                        </div>
+                        <div class="glass-card" style="padding: 1.5rem;">
+                            <h3>Colaboradores Cadastrados</h3>
+                            <div style="margin-top: 1rem;" id="lista-colaboradores">Nenhum colaborador cadastrado.</div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+    </section>
+
+    <!-- MODAIS DE CRUD -->
+
+    <!-- Modal: Área -->
+    <div id="modal-area" class="modal-overlay">
+        <div class="glass-panel modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Cadastrar Área</h3>
+                <button class="modal-close" onclick="window.crudController.closeModal('modal-area')"><i
+                        class="ph ph-x"></i></button>
+            </div>
+            <div class="modal-body">
+                <form id="form-area">
+                    <div class="form-group">
+                        <label class="form-label">Nome da Área</label>
+                        <input type="text" id="area-nome" class="form-control" required placeholder="Ex: Financeiro">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Descrição</label>
+                        <textarea id="area-descricao" class="form-control" rows="3"
+                            placeholder="Descrição opcional..."></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary"
+                    onclick="window.crudController.closeModal('modal-area')">Cancelar</button>
+                <button class="btn btn-primary" onclick="window.crudController.salvarArea()">Salvar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Colaborador -->
+    <div id="modal-colaborador" class="modal-overlay">
+        <div class="glass-panel modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Cadastrar Colaborador</h3>
+                <button class="modal-close" onclick="window.crudController.closeModal('modal-colaborador')"><i
+                        class="ph ph-x"></i></button>
+            </div>
+            <div class="modal-body">
+                <form id="form-colaborador">
+                    <div class="form-group">
+                        <label class="form-label">Nome Completo</label>
+                        <input type="text" id="colab-nome" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Área</label>
+                        <select id="colab-area" class="form-control" required></select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Cargo</label>
+                        <input type="text" id="colab-cargo" class="form-control" required>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary"
+                    onclick="window.crudController.closeModal('modal-colaborador')">Cancelar</button>
+                <button class="btn btn-primary" onclick="window.crudController.salvarColaborador()">Salvar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Meta -->
+    <div id="modal-meta" class="modal-overlay">
+        <div class="glass-panel modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Cadastrar Meta</h3>
+                <button class="modal-close" onclick="window.crudController.closeModal('modal-meta')"><i
+                        class="ph ph-x"></i></button>
+            </div>
+            <div class="modal-body">
+                <form id="form-meta">
+                    <div class="form-group">
+                        <label class="form-label">Título da Meta</label>
+                        <input type="text" id="meta-titulo" class="form-control" required
+                            placeholder="Ex: Elaborar 50 balancetes">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Tipo de Meta</label>
+                        <select id="meta-tipo" class="form-control" onchange="window.crudController.toggleMetaTipo()"
+                            required>
+                            <option value="AREA">Por Área</option>
+                            <option value="COLABORADOR">Por Colaborador</option>
+                        </select>
+                    </div>
+                    <div class="form-group" id="group-meta-area">
+                        <label class="form-label">Área Responsável</label>
+                        <select id="meta-area" class="form-control"></select>
+                    </div>
+                    <div class="form-group hidden" id="group-meta-colab">
+                        <label class="form-label">Colaborador Responsável</label>
+                        <select id="meta-colab" class="form-control"></select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary"
+                    onclick="window.crudController.closeModal('modal-meta')">Cancelar</button>
+                <button class="btn btn-primary" onclick="window.crudController.salvarMeta()">Salvar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Lançamento -->
+    <div id="modal-lancamento" class="modal-overlay">
+        <div class="glass-panel modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Lançar Desempenho</h3>
+                <button class="modal-close" onclick="window.crudController.closeModal('modal-lancamento')"><i
+                        class="ph ph-x"></i></button>
+            </div>
+            <div class="modal-body">
+                <form id="form-lancamento">
+                    <div class="form-group">
+                        <label class="form-label">Meta</label>
+                        <select id="lanc-meta" class="form-control" required></select>
+                    </div>
+                    <div style="display: flex; gap: 1rem;">
+                        <div class="form-group" style="flex: 1;">
+                            <label class="form-label">Mês</label>
+                            <select id="lanc-mes" class="form-control" required>
+                                <option value="1">Janeiro</option>
+                                <option value="2">Fevereiro</option>
+                                <option value="3">Março</option>
+                                <option value="4">Abril</option>
+                                <option value="5">Maio</option>
+                                <option value="6">Junho</option>
+                                <option value="7">Julho</option>
+                                <option value="8">Agosto</option>
+                                <option value="9">Setembro</option>
+                                <option value="10">Outubro</option>
+                                <option value="11">Novembro</option>
+                                <option value="12">Dezembro</option>
+                            </select>
+                        </div>
+                        <div class="form-group" style="flex: 1;">
+                            <label class="form-label">Ano</label>
+                            <input type="number" id="lanc-ano" class="form-control" value="2026" required>
+                        </div>
+                    </div>
+                    <div style="display: flex; gap: 1rem;">
+                        <div class="form-group" style="flex: 1;">
+                            <label class="form-label">Previsto</label>
+                            <input type="number" id="lanc-previsto" class="form-control" required>
+                        </div>
+                        <div class="form-group" style="flex: 1;">
+                            <label class="form-label">Realizado</label>
+                            <input type="number" id="lanc-realizado" class="form-control" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Observações</label>
+                        <textarea id="lanc-obs" class="form-control" rows="2"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary"
+                    onclick="window.crudController.closeModal('modal-lancamento')">Cancelar</button>
+                <button class="btn btn-primary" onclick="window.crudController.salvarLancamento()">Salvar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modulos JS -->
+    <script type="module" src="js/app.js"></script>
+</body>
+
+</html>
