@@ -25,7 +25,7 @@ class AppController {
                         await signInWithEmailAndPassword(auth, email, pwd);
                     } else {
                         if(email === 'admin@poliscon.com') {
-                            this.showApp({ email: 'Administrador (Offline Mode)' });
+                            this.showApp({ email: 'admin@poliscon.com' });
                         } else {
                             throw new Error("Credenciais inválidas no modo offline. Use admin@poliscon.com");
                         }
@@ -90,6 +90,18 @@ class AppController {
             
             window.crudController.loadAreaSelects();
             window.crudController.loadColabSelects();
+
+            // Inicializar filtros da imputação com mês/ano atual
+            const now = new Date();
+            const filterMes = document.getElementById('filter-mes-imputacao');
+            const filterAno = document.getElementById('filter-ano-imputacao');
+            if (filterMes && filterAno) {
+                // Apenas define o valor padrão se não estiver definido
+                if (!filterMes.value) filterMes.value = now.getMonth() + 1;
+                if (!filterAno.value || filterAno.value === "2026") filterAno.value = now.getFullYear();
+                
+                this.dashboard.updateStatusImputacao(filterMes.value, filterAno.value);
+            }
         } catch(e) {
             console.error("Erro ao carregar dados", e);
         }
@@ -109,6 +121,13 @@ class AppController {
                 document.getElementById('view-' + target).classList.remove('hidden');
 
                 document.getElementById('page-title').innerText = item.innerText.trim();
+
+                // Ao abrir a view de imputação, atualiza os dados
+                if (target === 'status-imputacao') {
+                    const mes = document.getElementById('filter-mes-imputacao').value;
+                    const ano = document.getElementById('filter-ano-imputacao').value;
+                    this.dashboard.updateStatusImputacao(mes, ano);
+                }
 
                 // Resize charts if they exist in the new view
                 if (window.Chart) {
@@ -134,6 +153,16 @@ class AppController {
             const ano = document.getElementById('filter-ano-colab').value;
             this.dashboard.updateDashboardColaborador(colab, ano);
         });
+
+        // Filtro Status de Imputação
+        const btnFiltrarImputacao = document.getElementById('btn-filtrar-imputacao');
+        if (btnFiltrarImputacao) {
+            btnFiltrarImputacao.addEventListener('click', () => {
+                const mes = document.getElementById('filter-mes-imputacao').value;
+                const ano = document.getElementById('filter-ano-imputacao').value;
+                this.dashboard.updateStatusImputacao(mes, ano);
+            });
+        }
 
         // Mobile Menu
         const btnMenu = document.getElementById('btn-mobile-menu');

@@ -150,12 +150,16 @@ export function renderGaugeChart(ctxId, value) {
     if (value >= 70 && value < 90) color = '#F59E0B'; // Amarelo
     if (value >= 90) color = '#10B981'; // Verde
 
+    // Limita o valor visual a 100% para evitar quebra no Chart.js por valores negativos no preenchimento
+    const chartValue = Math.max(0, Math.min(value, 100));
+    const remaining = Math.max(0, 100 - chartValue);
+
     chartInstances[ctxId] = new Chart(ctx, {
         type: 'doughnut',
         data: {
             labels: ['Realizado', 'Faltante'],
             datasets: [{
-                data: [value, 100 - value],
+                data: [chartValue, remaining],
                 backgroundColor: [color, 'rgba(255,255,255,0.1)'],
                 borderWidth: 0,
                 circumference: 180, // Metade

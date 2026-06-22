@@ -63,6 +63,9 @@
                 <a href="#" class="nav-item active" data-target="dashboard-geral">
                     <i class="ph ph-squares-four"></i> Visão Geral
                 </a>
+                <a href="#" class="nav-item" data-target="status-imputacao">
+                    <i class="ph ph-check-square"></i> Status de Imputação
+                </a>
                 <a href="#" class="nav-item" data-target="dashboard-area">
                     <i class="ph ph-chart-pie-slice"></i> Por Área
                 </a>
@@ -108,9 +111,9 @@
                     <div class="kpi-grid">
                         <div class="glass-card kpi-card">
                             <div class="kpi-info">
-                                <h3>Total de Metas</h3>
+                                <h3>Total de Indicadores</h3>
                                 <div class="kpi-value" id="kpi-total-metas">0</div>
-                                <div class="kpi-indicator positive"><i class="ph ph-trend-up"></i> Ativas no sistema
+                                <div class="kpi-indicator positive"><i class="ph ph-target"></i> Ativos no sistema
                                 </div>
                             </div>
                             <div class="kpi-icon"><i class="ph ph-target"></i></div>
@@ -158,6 +161,59 @@
                             <div class="chart-container">
                                 <canvas id="chartDistribuicaoDesempenho"></canvas>
                             </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- VIEW: STATUS DE IMPUTAÇÃO -->
+                <div id="view-status-imputacao" class="view-content hidden">
+                    <div class="glass-card" style="padding: 1.5rem; margin-bottom: 2rem;">
+                        <div class="filters-bar" style="margin-bottom: 0;">
+                            <div class="form-group" style="margin-bottom: 0;">
+                                <label class="form-label">Mês</label>
+                                <select id="filter-mes-imputacao" class="form-control">
+                                    <option value="1">Janeiro</option>
+                                    <option value="2">Fevereiro</option>
+                                    <option value="3">Março</option>
+                                    <option value="4">Abril</option>
+                                    <option value="5">Maio</option>
+                                    <option value="6">Junho</option>
+                                    <option value="7">Julho</option>
+                                    <option value="8">Agosto</option>
+                                    <option value="9">Setembro</option>
+                                    <option value="10">Outubro</option>
+                                    <option value="11">Novembro</option>
+                                    <option value="12">Dezembro</option>
+                                </select>
+                            </div>
+                            <div class="form-group" style="margin-bottom: 0;">
+                                <label class="form-label">Ano</label>
+                                <input type="number" id="filter-ano-imputacao" class="form-control" value="2026">
+                            </div>
+                            <div style="display: flex; align-items: flex-end; padding-bottom: 2px;">
+                                <button id="btn-filtrar-imputacao" class="btn btn-primary"><i
+                                        class="ph ph-arrows-clockwise"></i> Atualizar</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="glass-card" style="padding: 1.5rem;">
+                        <h3 style="margin-bottom: 1.5rem;">Controle de Imputação por Área</h3>
+                        <div class="table-container">
+                            <table class="table" style="width: 100%;">
+                                <thead>
+                                    <tr>
+                                        <th>Área</th>
+                                        <th style="text-align: center;">Indicadores Totais</th>
+                                        <th style="text-align: center;">Imputados</th>
+                                        <th style="width: 35%;">Progresso</th>
+                                        <th style="text-align: center;">Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tabela-status-imputacao">
+                                    <!-- Dynamic rows -->
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 </div>
@@ -277,7 +333,7 @@
                                 onclick="window.crudController.openModal('modal-colaborador')"><i
                                     class="ph ph-plus"></i> Novo Colaborador</button>
                             <button class="btn btn-primary" onclick="window.crudController.openModal('modal-meta')"><i
-                                    class="ph ph-plus"></i> Nova Meta</button>
+                                    class="ph ph-plus"></i> Novo Indicador</button>
                             <button class="btn btn-primary"
                                 onclick="window.crudController.openModal('modal-lancamento')"><i class="ph ph-plus"></i>
                                 Novo Lançamento</button>
@@ -297,8 +353,8 @@
                     
                     <div class="charts-grid" style="margin-top: -0.5rem;">
                         <div class="glass-card" style="padding: 1.5rem;">
-                            <h3>Metas Cadastradas</h3>
-                            <div style="margin-top: 1rem;" id="lista-metas">Nenhuma meta cadastrada.</div>
+                            <h3>Indicadores Cadastrados</h3>
+                            <div style="margin-top: 1rem;" id="lista-metas">Nenhum indicador cadastrado.</div>
                         </div>
                         <div class="glass-card" style="padding: 1.5rem;">
                             <h3>Lançamentos Realizados</h3>
@@ -312,7 +368,7 @@
                     <div class="glass-card" style="padding: 3rem; text-align: center; max-width: 500px;">
                         <i class="ph ph-note-pencil" style="font-size: 4rem; color: var(--primary-color); margin-bottom: 1rem;"></i>
                         <h2 style="margin-bottom: 1rem;">Área de Imputação de Dados</h2>
-                        <p style="color: var(--text-secondary); margin-bottom: 2rem;">Seu acesso é exclusivo para lançar o desempenho das metas cadastradas.</p>
+                        <p style="color: var(--text-secondary); margin-bottom: 2rem;">Seu acesso é exclusivo para lançar o desempenho dos indicadores cadastrados.</p>
                         <button class="btn btn-primary" style="font-size: 1.1rem; padding: 1rem 2rem;" onclick="window.crudController.openModal('modal-lancamento')">
                             <i class="ph ph-plus-circle"></i> Fazer Novo Lançamento
                         </button>
@@ -405,19 +461,19 @@
     <div id="modal-meta" class="modal-overlay">
         <div class="glass-panel modal-content">
             <div class="modal-header">
-                <h3 class="modal-title">Cadastrar Meta</h3>
+                <h3 class="modal-title">Cadastrar Indicador</h3>
                 <button class="modal-close" onclick="window.crudController.closeModal('modal-meta')"><i
                         class="ph ph-x"></i></button>
             </div>
             <div class="modal-body">
                 <form id="form-meta">
                     <div class="form-group">
-                        <label class="form-label">Título da Meta</label>
+                        <label class="form-label">Título do Indicador</label>
                         <input type="text" id="meta-titulo" class="form-control" required
                             placeholder="Ex: Elaborar 50 balancetes">
                     </div>
                     <div class="form-group">
-                        <label class="form-label">Tipo de Meta</label>
+                        <label class="form-label">Tipo de Indicador</label>
                         <select id="meta-tipo" class="form-control" onchange="window.crudController.toggleMetaTipo()"
                             required>
                             <option value="AREA">Por Área</option>
@@ -453,7 +509,7 @@
             <div class="modal-body">
                 <form id="form-lancamento">
                     <div class="form-group">
-                        <label class="form-label">Meta</label>
+                        <label class="form-label">Indicador</label>
                         <select id="lanc-meta" class="form-control" required></select>
                     </div>
                     <div style="display: flex; gap: 1rem;">

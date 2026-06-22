@@ -130,7 +130,10 @@ export class DashboardController {
         const createItemHTML = (texto, colecao, id) => `
             <div style="padding: 0.5rem; border-bottom: 1px solid var(--surface-border); display: flex; justify-content: space-between; align-items: center;">
                 <span>${texto}</span>
-                <button class="btn btn-danger" style="padding: 0.25rem 0.5rem; min-width: auto; height: 32px;" onclick="window.crudController.excluirItem('${colecao}', '${id}')" title="Excluir"><i class="ph ph-trash" style="font-size: 1.1rem; margin: 0;"></i></button>
+                <div style="display: flex; gap: 0.5rem;">
+                    <button class="btn btn-secondary" style="padding: 0.25rem 0.5rem; min-width: auto; height: 32px;" onclick="window.crudController.editarItem('${colecao}', '${id}')" title="Editar"><i class="ph ph-pencil" style="font-size: 1.1rem; margin: 0;"></i></button>
+                    <button class="btn btn-danger" style="padding: 0.25rem 0.5rem; min-width: auto; height: 32px;" onclick="window.crudController.excluirItem('${colecao}', '${id}')" title="Excluir"><i class="ph ph-trash" style="font-size: 1.1rem; margin: 0;"></i></button>
+                </div>
             </div>
         `;
 
@@ -149,12 +152,94 @@ export class DashboardController {
             const alvo = m.tipo === 'AREA' ? (area ? area.nome : '') : (colab ? colab.nome : '');
             return createItemHTML(`<i class="ph ph-target"></i> ${m.titulo} <span class="text-muted" style="font-size:0.8rem">- ${alvo}</span>`, 'metas', m.id);
         }).join('');
-        if(document.getElementById('lista-metas')) document.getElementById('lista-metas').innerHTML = htmlMetas || 'Nenhuma meta cadastrada.';
+        if(document.getElementById('lista-metas')) document.getElementById('lista-metas').innerHTML = htmlMetas || 'Nenhum indicador cadastrado.';
 
         let htmlLancamentos = this.dados.lancamentos.map(l => {
             const meta = this.dados.metas.find(m => m.id === l.metaId);
             return createItemHTML(`<i class="ph ph-chart-line-up"></i> ${l.mes}/${l.ano} - Prev: ${l.previsto} | Real: ${l.realizado} <span class="text-muted" style="font-size:0.8rem">- ${meta ? meta.titulo : ''}</span>`, 'lancamentos', l.id);
         }).join('');
         if(document.getElementById('lista-lancamentos')) document.getElementById('lista-lancamentos').innerHTML = htmlLancamentos || 'Nenhum lançamento registrado.';
+    }
+
+    updateStatusImputacao(mes, ano) {
+        const tbody = document.getElementById('tabela-status-imputacao');
+        if (!tbody) return;
+
+        let html = '';
+
+        this.dados.areas.forEach(area => {
+            // Encontra os colaboradores desta área
+            const colabIdsDaArea = this.dados.colaboradores
+                .filter(c => c.areaId === area.id)
+                .map(c => c.id);
+
+            // Filtra indicadores mapeados para esta área
+            const indicadoresDaArea = this.dados.metas.filter(m => {
+                if (m.tipo === 'AREA') {
+                    return m.areaId === area.id;
+                } else if (m.tipo === 'COLABORADOR') {
+                    return colabIdsDaArea.includes(m.colaboradorId);
+                }
+                return false;
+            });
+
+            const totalIndicadores = indicadoresDaArea.length;
+            
+            // Encontra lançamentos realizados para esses indicadores no mês/ano
+            const indicadorIds = indicadoresDaArea.map(m => m.id);
+            const lancamentosMesAno = this.dados.lancamentos.filter(l => 
+                l.mes == mes && 
+                l.ano == ano && 
+                indicadorIds.includes(l.metaId)
+            );
+            
+            // Conjunto de IDs de indicadores que já tiveram lançamentos
+            const metaIdsLancados = new Set(lancamentosMesAno.map(l => l.metaId));
+            const imputados = metaIdsLancados.size;
+
+            let statusHTML = '';
+            let progressPercent = 0;
+
+            if (totalIndicadores === 0) {
+                progressPercent = 100;
+                statusHTML = `<span class="badge badge-success">Sem Indicadores</span>`;
+            } else {
+                progressPercent = Math.round((imputados / totalIndicadores) * 100);
+                if (imputados === totalIndicadores) {
+                    statusHTML = `<span class="badge badge-success">Imputado</span>`;
+                } else if (imputados > 0) {
+                    statusHTML = `<span class="badge badge-warning">Pendente</span>`;
+                } else {
+                    statusHTML = `<span class="badge badge-danger">Pendente</span>`;
+                }
+            }
+
+            html += `
+                <tr style="border-bottom: 1px solid var(--surface-border);">
+                    <td style="padding: 1rem 0.75rem; font-weight: 500;">
+                        <i class="ph ph-buildings" style="color: var(--gold-main); margin-right: 0.5rem;"></i>${area.nome}
+                    </td>
+                    <td style="padding: 1rem 0.75rem; text-align: center;">${totalIndicadores}</td>
+                    <td style="padding: 1rem 0.75rem; text-align: center;">${imputados}</td>
+                    <td style="padding: 1rem 0.75rem; vertical-align: middle;">
+                        <div style="display: flex; align-items: center; gap: 0.75rem;">
+                            <div class="progress-bar-container" style="flex: 1;">
+                                <div class="progress-bar" style="width: ${progressPercent}%;"></div>
+                            </div>
+                            <span style="font-size: 0.85rem; font-weight: 600; min-width: 32px; text-align: right;">${progressPercent}%</span>
+                        </div>
+                    </td>
+                    <td style="padding: 1rem 0.75rem; text-align: center;">
+                        ${statusHTML}
+                    </td>
+                </tr>
+            `;
+        });
+
+        if (this.dados.areas.length === 0) {
+            html = `<tr><td colspan="5" style="text-align: center; padding: 2rem; color: var(--text-secondary);">Nenhuma área cadastrada no sistema.</td></tr>`;
+        }
+
+        tbody.innerHTML = html;
     }
 }
