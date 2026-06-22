@@ -25,7 +25,7 @@ class AppController {
                         await signInWithEmailAndPassword(auth, email, pwd);
                     } else {
                         if(email === 'admin@poliscon.com') {
-                            this.showApp({ email: 'admin@poliscon.com' });
+                            this.showApp({ email: 'Administrador (Offline Mode)' });
                         } else {
                             throw new Error("Credenciais inválidas no modo offline. Use admin@poliscon.com");
                         }

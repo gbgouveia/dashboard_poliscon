@@ -94,23 +94,24 @@ window.crudController = {
 
     openModal: (id) => {
         document.getElementById(id).classList.add('active');
-        // Refresh selects if needed
-        if(id === 'modal-colaborador') {
-            window.crudController.loadAreaSelects();
-            // Reset required field password for creation
-            if (!window.crudController.activeEditId) {
+        
+        // Só recarrega os selects ao criar novo registro (não ao editar)
+        const isEditing = !!window.crudController.activeEditId;
+        if (!isEditing) {
+            if(id === 'modal-colaborador') {
+                window.crudController.loadAreaSelects();
                 const senhaInput = document.getElementById('colab-senha');
                 if (senhaInput) {
                     senhaInput.required = true;
                     senhaInput.placeholder = '';
                 }
             }
+            if(id === 'modal-meta' || id === 'modal-indicador') {
+                window.crudController.loadAreaSelects();
+                window.crudController.loadColabSelects();
+            }
+            if(id === 'modal-lancamento') window.crudController.loadMetaSelects();
         }
-        if(id === 'modal-meta' || id === 'modal-indicador') {
-            window.crudController.loadAreaSelects();
-            window.crudController.loadColabSelects();
-        }
-        if(id === 'modal-lancamento') window.crudController.loadMetaSelects();
     },
 
     closeModal: (id) => {
@@ -150,7 +151,10 @@ window.crudController = {
         } else {
             document.getElementById('group-meta-area').classList.add('hidden');
             document.getElementById('group-meta-colab').classList.remove('hidden');
-            window.crudController.loadColabSelects();
+            // Só recarrega se não estiver em edição (editarItem já carrega)
+            if (!window.crudController.activeEditId) {
+                window.crudController.loadColabSelects();
+            }
         }
     },
 
@@ -508,7 +512,7 @@ window.crudController = {
 
     getUserProfile: async (email) => {
         if (!email) return 'LANCADOR';
-        if (email === 'admin@poliscon.com' || email.includes('Administrador')) return 'ADMIN'; // Fallback offline admin
+        if (email === 'admin@poliscon.com') return 'ADMIN'; // Fallback offline admin
         
         try {
             if (useMocks) {
