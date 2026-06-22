@@ -109,6 +109,13 @@ class AppController {
                 document.getElementById('view-' + target).classList.remove('hidden');
 
                 document.getElementById('page-title').innerText = item.innerText.trim();
+
+                // Resize charts if they exist in the new view
+                if (window.Chart) {
+                    Object.values(window.Chart.instances).forEach(chart => {
+                        chart.resize();
+                    });
+                }
             });
         });
     }
